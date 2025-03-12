@@ -35,7 +35,7 @@ Den smarta lampan är en fristående enhet men kan potentiellt integreras med sm
 
 ### 2.3 Användningsfall
 - **Scenario 1:** En person går in i ett mörkt rum och klappar händerna - lampan tänds automatiskt.
-- **Scenario 2:** Ett rum blir ljusare på morgonen - lampans ljusstyrka minskar för att spara energi.
+- **Scenario 2:** Ett rum blir mörkare på kvällen - lampans ljusstyrka minskar för att spara energi.
 - **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt (vid framtida versioner).
 
 ---
