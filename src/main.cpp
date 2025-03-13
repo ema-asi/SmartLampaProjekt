@@ -50,17 +50,16 @@ void loop()
   int soundstatus = analogRead(SoundAnalog_PIN);
   int soundstatusDigital = digitalRead(SoundDigital_PIN);
   Serial.print("Sound Intensity: ");
-  Serial.println(SoundAnalog_PIN);
-  Serial.println(SoundDigital_PIN);
-  delay(1000);
+  Serial.println(soundstatus);
+  Serial.println(soundstatusDigital);
 
-  if (soundstatus < Sound_Treshold)
+  if (soundstatusDigital == HIGH)
   {
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(LED_PIN, HIGH);
   }
   else
   {
-    digitalWrite(LED_PIN, HIGH);
+    digitalWrite(LED_PIN, LOW);
   }
 }
 
