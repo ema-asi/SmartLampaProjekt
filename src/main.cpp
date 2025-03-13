@@ -3,12 +3,13 @@
 
 #include "arduino_secrets.h"
 
-#define PhotoResistor_PIN A5                     // Will eventually be digital input pin for light-sensor
-#define SoundMonitor_PIN A5                      // Will eventually be analog input pin for sound-sensor
-#define LED_PIN 0                                // Eventual digital-output pin a light-source
-#define sound_Treshold 0                         // Will serve as calibration for our sound-sensor
-#define WIFI_RECONNECTION_ATTEMPTS 10            // Used in connectToWifi()
-#define WIFI_TIME_BETWEEN_RECONNECTION 1000      // Defined in milliseconds. Used in connectToWifi()
+#define PhotoResistor_PIN 2                 // Will eventually be digital input pin for light-sensor
+#define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound-sensor
+#define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound-sensor
+#define LED_PIN 4                           // Eventual digital-output pin a light-source
+#define Sound_Treshold 500                  // Will serve as calibration for our sound-sensor
+#define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
+#define WIFI_TIME_BETWEEN_RECONNECTION 1000 // Defined in milliseconds. Used in connectToWifi()
 
 // YOU NEED THIS IN A SEPERATE "arduino_secrets.h" FILE OR IT WILL NOT WORK/COMPILE
 //
@@ -22,12 +23,44 @@ void ConnectToWifi();
 
 void setup()
 {
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(PhotoResistor_PIN, INPUT);
+  pinMode(SoundAnalog_PIN, INPUT);
+  pinMode(SoundDigital_PIN, INPUT);
+  Serial.begin(115200);
 }
 
-void loop() 
+void loop()
 {
-  Serial.begin(115200);
-  Serial.println(digitalRead(PhotoResistor_PIN));
+  int lightstatus = digitalRead(PhotoResistor_PIN);
+  Serial.print("Light Intensity: ");
+  Serial.println(lightstatus);
+  delay(1000);
+
+  if (lightstatus == 1)
+  {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
+
+  int soundstatus = analogRead(SoundAnalog_PIN);
+  int soundstatusDigital = digitalRead(SoundDigital_PIN);
+  Serial.print("Sound Intensity: ");
+  Serial.println(SoundAnalog_PIN);
+  Serial.println(SoundDigital_PIN);
+  delay(1000);
+
+  if (soundstatus < Sound_Treshold)
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, HIGH);
+  }
 }
 
 // Function Definitions:
@@ -37,9 +70,9 @@ void loop()
  */
 void ConnectToWifi()
 {
-  WiFi.disconnect();  // Ensures a clean start
-  WiFi.end();         // Hard reset of the WiFi module
-  delay(1000);        // Give it time(ms) to reset
+  WiFi.disconnect(); // Ensures a clean start
+  WiFi.end();        // Hard reset of the WiFi module
+  delay(1000);       // Give it time(ms) to reset
 
   int numberOfAttempts = 0;
 
