@@ -3,10 +3,10 @@
 
 #include "arduino_secrets.h"
 
-#define PhotoResistor_PIN A5                     // Will eventually be analog input pin for light-sensor
+#define PhotoResistor_PIN A5                     // Will eventually be digital input pin for light-sensor
 #define SoundMonitor_PIN A5                      // Will eventually be analog input pin for sound-sensor
 #define LED_PIN 0                                // Eventual digital-output pin a light-source
-#define sound_Treshold 0                         // Will serve as calibration for our light-diode/sensor
+#define sound_Treshold 0                         // Will serve as calibration for our sound-sensor
 #define WIFI_RECONNECTION_ATTEMPTS 10            // Used in connectToWifi()
 #define WIFI_TIME_BETWEEN_RECONNECTION 1000      // Defined in milliseconds. Used in connectToWifi()
 
@@ -17,6 +17,7 @@
 // const char PASSWORD[] = "WIFI_PASSWORD_HERE";   // your WiFi password
 
 // Function Declarations:
+
 void ConnectToWifi();
 
 void setup()
@@ -25,8 +26,15 @@ void setup()
 
 void loop() 
 {
+  Serial.begin(115200);
+  Serial.println(digitalRead(PhotoResistor_PIN));
 }
 
+// Function Definitions:
+
+/**
+ * @brief Meant to be used in setup() and does NOT handle errors
+ */
 void ConnectToWifi()
 {
   WiFi.disconnect();  // Ensures a clean start
