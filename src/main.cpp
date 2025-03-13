@@ -36,7 +36,6 @@ void loop()
   int lightstatus = digitalRead(PhotoResistor_PIN);
   Serial.print("Light Intensity: ");
   Serial.println(lightstatus);
-  delay(1000);
 
   if (lightstatus == 1)
   {
