@@ -40,36 +40,47 @@ Den smarta lampan är en fristående enhet men kan potentiellt integreras med sm
 
 ---
 
-## 3. Specifika krav
+## 3. Hårdvara
 
-### 3.1 Funktionskrav
-
-| **ID** | **Krav**              | **Beskrivning**                                                      |
-|--------|-----------------------|----------------------------------------------------------------------|
-| F1     | Ljudaktivering        | Lampan ska tändas vid ljudsignaler i mörka miljöer.                  |
-| F2     | Automatisk ljusstyrka | Ljusstyrkan ska justeras efter omgivande ljus.                         |
-| F3     | Olika ljuslägen       | Lampan ska kunna byta ljusläge, t.ex. nattläge, partyläge (vid framtida versioner). |
-
-### 3.2 Icke-funktionella krav
-
-| **ID** | **Krav**           | **Beskrivning**                                                              |
-|--------|--------------------|------------------------------------------------------------------------------|
-| NF1    | Utvecklingsmiljö   | Koden ska skrivas i C++.                                                       |
-| NF2    | Hårdvaruplattform  | Lampan ska styras av en Arduino Uno R4 WiFi-enhet.                             |
-| NF3    | Responstid         | Lampan ska reagera på ljud och ljus-förändringar inom X sekunder.              |
-| NF4    | Energibesparing    | Lampan ska vara optimerad för låg strömförbrukning.                            |
-| NF5    | Kompatibilitet     | Lampan ska kunna integreras med smarta hem-system (vid framtida versioner).     |
+| **Part Name**               | **Part Type**             | **Beskrivning**                                                            | **Dokumentation**                                                   |
+|-----------------------------|---------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
+| Arduino Uno Rev4 Wifi       | Mainboard                 | Huvudenhet som kör kod, läser sensorer och kontrollerar utdata             | https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf |
+| KY-037 Condenser Microphone | Sensor-input              | Ska sensorn vara analog eller digital? Hur använder vi den? Pin?           | https://drive.google.com/file/d/16PGgPSGamAiOMzwpldFdIGFUXAehb9Q6/  |
+| LM393 Light Detector        | Sensor-input              | Digital input för styra ljusnivå baserat på omgivningen.                   |                                                                     |
+|                             |                           |                                                                            |                                                                     |
 
 ---
 
-## 4. Begränsningar och Antaganden
+## 4. Specifika krav
+
+### 4.1 Funktionskrav
+
+| **ID** | **Krav**              | **Beskrivning**                                                                     |
+|--------|-----------------------|-------------------------------------------------------------------------------------|
+| F1     | Ljudaktivering        | Lampan ska tändas vid ljudsignaler i mörka miljöer.                                 |
+| F2     | Automatisk ljusstyrka | Ljusstyrkan ska justeras efter omgivande ljus.                                      |
+| F3     | Olika ljuslägen       | Lampan ska kunna byta ljusläge, t.ex. nattläge, partyläge (vid framtida versioner). |
+
+### 4.2 Icke-funktionella krav
+
+| **ID** | **Krav**           | **Beskrivning**                                                               |
+|--------|--------------------|-------------------------------------------------------------------------------|
+| NF1    | Utvecklingsmiljö   | Koden ska skrivas i C++.                                                      |
+| NF2    | Hårdvaruplattform  | Lampan ska styras av en Arduino Uno R4 WiFi-enhet.                            |
+| NF3    | Responstid         | Lampan ska reagera på ljud och ljus-förändringar inom X sekunder.             |
+| NF4    | Energibesparing    | Lampan ska vara optimerad för låg strömförbrukning.                           |
+| NF5    | Kompatibilitet     | Lampan ska kunna integreras med smarta hem-system (vid framtida versioner).   |
+
+---
+
+## 5. Begränsningar och Antaganden
 - Lampan ska fungera inomhus.
-- Vi siktar på strömgivning med likspänning och **INTE** växelström.
+- Vi siktar på strömgivning med likspänning och **inte** växelström.
 - En enkel mikrofon och ljussensor ska räcka för att detektera ljud och ljusförändringar.
 
 ---
 
-## 5. Framtida Utvecklingsförslag
+## 6. Framtida Utvecklingsförslag
 - Implementering av en app för att styra lampan via smartphone.
 - Möjlighet att schemalägga ljusinställningar.
 - Röststyrning via smarta assistenter.
@@ -77,5 +88,5 @@ Den smarta lampan är en fristående enhet men kan potentiellt integreras med sm
 
 ---
 
-## 6. Slutsats
+## 7. Slutsats
 Den smarta lampan är en innovativ lösning som kombinerar bekvämlighet och energieffektivitet. Med en tydlig kravspecifikation och användning av C++ och Arduino kan projektet genomföras på ett strukturerat sätt med framtida expansion i åtanke.
