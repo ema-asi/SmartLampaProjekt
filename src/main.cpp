@@ -33,37 +33,37 @@ void setup()
 
 void loop()
 {
-  // Serial.print("Light Intensity: ");
-  // Serial.println(digitalRead(PhotoResistor_PIN));
+  Serial.print("Light Intensity: ");
+  Serial.println(digitalRead(PhotoResistor_PIN));
 
-  // if (digitalRead(PhotoResistor_PIN) == HIGH)
-  // {
-  //   digitalWrite(LED_PIN, HIGH);
-  // }
-  // else
-  // {
-  //   digitalWrite(LED_PIN, LOW);
-  // }
+  if (digitalRead(PhotoResistor_PIN) == HIGH)
+  {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
 
-  // Serial.print("Sound Intensity: ");
-  // Serial.println(analogRead(SoundAnalog_PIN));
-  // Serial.println(digitalRead(SoundDigital_PIN));
+  Serial.print("Sound Intensity: ");
+  Serial.println(analogRead(SoundAnalog_PIN));
+  Serial.println(digitalRead(SoundDigital_PIN));
 
-  // if (digitalRead(SoundDigital_PIN) == HIGH)
-  // {
-  //   digitalWrite(LED_PIN, HIGH);
-  // }
-  // else
-  // {
-  //   digitalWrite(LED_PIN, LOW);
-  // }
+  if (digitalRead(SoundDigital_PIN) == HIGH)
+  {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
 
-  int soundLevel{}; // int SoundLevel = 0;
+  // int soundLevel{}; // int SoundLevel = 0;
 
-  soundLevel = analogRead(SoundAnalog_PIN);
-  Serial.println(soundLevel);
+  // soundLevel = analogRead(SoundAnalog_PIN);
+  // Serial.println(soundLevel);
 
-  delay(100);
+  // delay(100);
 }
 
 // Function Definitions:
