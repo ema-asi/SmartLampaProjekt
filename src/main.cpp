@@ -7,6 +7,7 @@
 #define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound-sensor
 #define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound-sensor
 #define LED_PIN 4                           // Eventual digital-output pin a light-source
+#define Measured_Light_Value 0              // Eventually analog-input from light sensor
 #define Sound_Treshold 500                  // Will serve as calibration for our sound-sensor
 #define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
 #define WIFI_TIME_BETWEEN_RECONNECTION 1000 // Defined in milliseconds. Used in connectToWifi()
@@ -23,11 +24,11 @@ void ConnectToWifi();
 
 void setup()
 {
+  Serial.begin(115200);
   pinMode(LED_PIN, OUTPUT);
   pinMode(PhotoResistor_PIN, INPUT);
   pinMode(SoundAnalog_PIN, INPUT);
   pinMode(SoundDigital_PIN, INPUT);
-  Serial.begin(115200);
 }
 
 void loop()
