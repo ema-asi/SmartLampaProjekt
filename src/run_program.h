@@ -10,22 +10,23 @@
 // const char SSID[] = "SSID_NAME_HERE";           // your WiFi network name
 // const char PASSWORD[] = "WIFI_PASSWORD_HERE";   // your WiFi password
 
-#define LightSensor_PIN 2                          // Will eventually be digital input pin for light sensor
-#define SoundAnalog_PIN A1                         // Will eventually be analog input pin for sound sensor
-#define SoundDigital_PIN 3                         // Will eventually be digital input pin for sound sensor
-#define LED_PIN 4                                  // Eventual digital-output pin a light source
-#define Sound_Treshold 500                         // Will serve as calibration for our sound sensor
-#define Light_Treshold 500                         // Will serve as calibration for our light sensor
-#define WIFI_RECONNECTION_ATTEMPTS 10              // Used in connectToWifi()
-#define WIFI_TIME_BETWEEN_RECONNECTION 2000        // Defined in milliseconds. Used in connectToWifi()
+#define LightSensor_PIN 2                   // Will eventually be digital input pin for light sensor
+#define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound sensor
+#define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound sensor
+#define LED_PIN 4                           // Eventual digital-output pin a light source
+#define Sound_Treshold 500                  // Will serve as calibration for our sound sensor
+#define Light_Treshold 500                  // Will serve as calibration for our light sensor
+#define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
+#define WIFI_TIME_BETWEEN_RECONNECTION 2000 // Defined in milliseconds. Used in connectToWifi()
 
-extern "C" char *sbrk(int i);
+extern "C" char *sbrk(int i); // For future debugging, simply used to print free memory (linux syscall)
 
-int measuredLightValue = 0;                        // analog input from light sensor
-int measuredSoundValue = 0;                        // analog input from sound sensor
+int measuredLightValue = 0; // analog input from light sensor
+int measuredSoundValue = 0; // analog input from sound sensor
 
 bool TestOn = false;
 bool runWithWiFi = false;
+bool isLampOn = false;
 
 // Function Declarations:
 
@@ -34,7 +35,7 @@ void updateMeasuredLightValue();
 void updateMeasuredSoundValue();
 void test_LightValue();
 void test_SoundValue();
-void lampAutomation_clap_activation();
+void Sound_toggleLampOnClap();
 void lampAutomation_consecutive_clap_activation();
 int getFreeMemory();
 void printFreeMemory();
@@ -66,7 +67,7 @@ void loop()
       Serial.println("Wi-fi disconnected.");
       ConnectToWifi();
     }
-    lampAutomation_clap_activation();
+    Sound_toggleLampOnClap();
     lampAutomation_consecutive_clap_activation();
     delay(150);
   }
@@ -81,21 +82,21 @@ void loop()
     test_SoundValue();
     printFreeMemory();
     delay(150);
-  } 
+  }
 }
 
 // Function Definitions:
 
 void test_LightValue()
 {
-    updateMeasuredLightValue();
-    Serial.println(measuredLightValue);
+  updateMeasuredLightValue();
+  Serial.println(measuredLightValue);
 }
 
 void test_SoundValue()
 {
-    updateMeasuredSoundValue();
-    Serial.println(measuredSoundValue);
+  updateMeasuredSoundValue();
+  Serial.println(measuredSoundValue);
 }
 
 void updateMeasuredLightValue()
@@ -108,7 +109,7 @@ void updateMeasuredSoundValue()
   measuredSoundValue = analogRead(SoundAnalog_PIN);
 }
 
-void lampAutomation_clap_activation()
+void Sound_toggleLampOnClap()
 {
   if (analogRead(LightSensor_PIN) <= Light_Treshold)
   {
@@ -157,6 +158,34 @@ void lampAutomation_consecutive_clap_activation()
   }
 }
 
+void clapDetection()
+{
+  static int startTime{};
+  static int elapsedTime{};
+  static int detectionCount = 0;
+
+  startTime = millis();
+
+  if (analogRead(SoundAnalog_PIN) > Sound_Treshold)
+  {
+    detectionCount++;
+  }
+}
+
+void clapDetectionAlgo(int amplitude)
+{
+  static int currentAmplitude{};
+  static int
+
+      Mätvärden : int recentMätVärden[5] = {50, 50, 50, 50, 50};
+  averageRecentMätVärden = SUM(array) int summa{};
+  for (int i = 0; i < sizeof(array); i++)
+  {
+    summa += recentMätVärden[i]
+  }
+  50 50 50 100 90 80 50 50 55 60 65 60 65 50
+}
+
 /**
  * @brief Meant to be used in setup() and does NOT handle errors
  */
@@ -197,18 +226,17 @@ void ConnectToWifi()
   }
 }
 
-int getFreeMemory() 
+int getFreeMemory()
 {
   char top;
   return &top - sbrk(0);
 }
 
-void printFreeMemory() 
+void printFreeMemory()
 {
   Serial.print("Free Memory: ");
   Serial.print(getFreeMemory());
   Serial.println(" Bytes.");
 }
-
 
 #endif // RUN_PROGRAM_H
