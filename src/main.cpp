@@ -4,9 +4,9 @@
 #include "arduino_secrets.h"
 
 #define PhotoResistor_PIN A0                // Will eventually be digital input pin for light-sensor
-#define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound-sensor
+#define SoundAnalog_PIN 5                   // Will eventually be analog input pin for sound-sensor
 #define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound-sensor
-#define LED_PIN 4                           // Eventual digital-output pin a light-source
+#define LED_PIN 5                           // Eventual digital-output pin a light-source
 #define Measured_Light_Value 0              // Eventually analog-input from light sensor
 #define Sound_Treshold 500                  // Will serve as calibration for our sound-sensor
 #define Light_Dark_Value 100                // Sensor value in complete darkness， can changes
