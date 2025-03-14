@@ -3,12 +3,14 @@
 
 #include "arduino_secrets.h"
 
-#define PhotoResistor_PIN 2                 // Will eventually be digital input pin for light-sensor
+#define PhotoResistor_PIN A0                // Will eventually be digital input pin for light-sensor
 #define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound-sensor
 #define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound-sensor
 #define LED_PIN 4                           // Eventual digital-output pin a light-source
 #define Measured_Light_Value 0              // Eventually analog-input from light sensor
 #define Sound_Treshold 500                  // Will serve as calibration for our sound-sensor
+#define Light_Dark_Value 100                // Sensor value in complete darkness， can changes
+#define Light_Bright_Value 800              // Sensor value in bright light, can changes
 #define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
 #define WIFI_TIME_BETWEEN_RECONNECTION 1000 // Defined in milliseconds. Used in connectToWifi()
 
@@ -22,8 +24,9 @@ bool isLampOn = false;
 
 // Function Declarations:
 
-void ConnectToWifi();
 void Sound_toggleLampOnClap();
+void ConnectToWifi();
+void Light_AdjustBrightness();
 
 void setup()
 {
@@ -36,10 +39,11 @@ void setup()
 
 void loop()
 {
-  Serial.print("Light Intensity: ");
-  Serial.println(digitalRead(PhotoResistor_PIN));
-  Serial.print("Sound Intensity: ");
-  Serial.println(analogRead(SoundAnalog_PIN));
+
+  // Serial.print("Light Intensity: ");
+  // Serial.println(digitalRead(PhotoResistor_PIN));
+  // Serial.print("Sound Intensity: ");
+  // Serial.println(analogRead(SoundAnalog_PIN));
 
   Sound_toggleLampOnClap();
 
@@ -52,6 +56,7 @@ void loop()
   // {
   //   digitalWrite(LED_PIN, LOW);
   // }
+  Light_AdjustBrightness();
 
   delay(100);
 }
@@ -69,6 +74,21 @@ void Sound_toggleLampOnClap()
   {
     return;
   }
+}
+
+void Light_AdjustBrightness()
+{
+  int sensorValue = analogRead(PhotoResistor_PIN);
+
+  int brightness = map(sensorValue, Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
+  brightness = constrain(brightness, 0, 255);                                      // Ensure brightness value is valid
+
+  analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
+
+  Serial.print("Sensor: ");
+  Serial.print(sensorValue);
+  Serial.print(" → Brightness: ");
+  Serial.println(brightness);
 }
 
 /**
