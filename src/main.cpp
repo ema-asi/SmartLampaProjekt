@@ -39,26 +39,14 @@ void setup()
 
 void loop()
 {
-
   // Serial.print("Light Intensity: ");
   // Serial.println(digitalRead(PhotoResistor_PIN));
-  // Serial.print("Sound Intensity: ");
-  // Serial.println(analogRead(SoundAnalog_PIN));
+  Serial.print("Sound Intensity: ");
+  Serial.println(analogRead(SoundAnalog_PIN));
 
   Sound_toggleLampOnClap();
-
-  // digitalWrite(LED_PIN, HIGH);
-  // if (digitalRead(PhotoResistor_PIN) == HIGH)
-  // {
-  //   digitalWrite(LED_PIN, HIGH);
-  // }
-  // else
-  // {
-  //   digitalWrite(LED_PIN, LOW);
-  // }
-  Light_AdjustBrightness();
-
   delay(100);
+  Light_AdjustBrightness();
 }
 
 // Function Definitions:
@@ -83,12 +71,19 @@ void Light_AdjustBrightness()
   int brightness = map(sensorValue, Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
   brightness = constrain(brightness, 0, 255);                                      // Ensure brightness value is valid
 
-  analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
-
   Serial.print("Sensor: ");
   Serial.print(sensorValue);
   Serial.print(" → Brightness: ");
   Serial.println(brightness);
+
+  if (isLampOn)
+  {
+    analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
+  }
+  else
+  {
+    analogWrite(LED_PIN, 0); // Set LED brightness, send PWM signal to LED
+  }
 }
 
 /**
