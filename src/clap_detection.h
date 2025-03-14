@@ -20,10 +20,10 @@ private:
     // Configuration parameters
     const int sampleSize;         // Number of samples in the moving average
     const int amplitudeMargin;    // Margin above the baseline to consider a peak
-    const int clapWindow;         // Time window (in ms) for detecting consecutive claps
+    const int clapWindow;         // Time(in ms) window for detecting consecutive claps
 
     // Buffer and indices for moving average
-    int* soundSamples;  
+    int* soundSamples;
     int sampleIndex;
 
     // Variables for clap detection
