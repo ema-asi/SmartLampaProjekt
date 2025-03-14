@@ -12,6 +12,8 @@
 #define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
 #define WIFI_TIME_BETWEEN_RECONNECTION 1000 // Defined in milliseconds. Used in connectToWifi()
 
+bool isLampOn = false;
+
 // YOU NEED THIS IN A SEPERATE "arduino_secrets.h" FILE OR IT WILL NOT WORK/COMPILE
 //
 // -----  WiFi Settings  ----
@@ -21,6 +23,7 @@
 // Function Declarations:
 
 void ConnectToWifi();
+void Sound_toggleLampOnClap();
 
 void setup()
 {
@@ -33,38 +36,40 @@ void setup()
 
 void loop()
 {
-  int lightstatus = digitalRead(PhotoResistor_PIN);
   Serial.print("Light Intensity: ");
-  Serial.println(lightstatus);
-  delay(1000);
-
-  if (lightstatus == 1)
-  {
-    digitalWrite(LED_PIN, HIGH);
-  }
-  else
-  {
-    digitalWrite(LED_PIN, LOW);
-  }
-
-  int soundstatus = analogRead(SoundAnalog_PIN);
-  int soundstatusDigital = digitalRead(SoundDigital_PIN);
+  Serial.println(digitalRead(PhotoResistor_PIN));
   Serial.print("Sound Intensity: ");
-  Serial.println(SoundAnalog_PIN);
-  Serial.println(SoundDigital_PIN);
-  delay(1000);
+  Serial.println(analogRead(SoundAnalog_PIN));
 
-  if (soundstatus < Sound_Treshold)
-  {
-    digitalWrite(LED_PIN, LOW);
-  }
-  else
-  {
-    digitalWrite(LED_PIN, HIGH);
-  }
+  Sound_toggleLampOnClap();
+
+  // digitalWrite(LED_PIN, HIGH);
+  // if (digitalRead(PhotoResistor_PIN) == HIGH)
+  // {
+  //   digitalWrite(LED_PIN, HIGH);
+  // }
+  // else
+  // {
+  //   digitalWrite(LED_PIN, LOW);
+  // }
+
+  delay(100);
 }
 
 // Function Definitions:
+
+void Sound_toggleLampOnClap()
+{
+  if (analogRead(SoundAnalog_PIN) < Sound_Treshold)
+  {
+    isLampOn = !isLampOn;
+    digitalWrite(LED_PIN, isLampOn);
+  }
+  else
+  {
+    return;
+  }
+}
 
 /**
  * @brief Meant to be used in setup() and does NOT handle errors
