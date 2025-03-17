@@ -2,7 +2,7 @@
 
 // Constructor
 ClapDetection::ClapDetection(int sampleSize, int amplitudeMargin, int clapWindow)
-    : sampleSize(sampleSize), amplitudeMargin(amplitudeMargin), clapWindow(clapWindow), sampleIndex(0), lastPeakTime(0), clapCount(0), isLampOn(0)
+    : sampleSize(sampleSize), amplitudeMargin(amplitudeMargin), clapWindow(clapWindow), sampleIndex(0), lastPeakTime(0), clapCount(0)
 {
     soundSamples = new int[sampleSize];
     for (int i = 0; i < sampleSize; i++)
@@ -75,6 +75,7 @@ bool ClapDetection::processAmplitude(int amplitude)
  * @param pinToRead
  * @param pinToWrite
  */
+/*
 void ClapDetection::detect_claps(int pinToRead, int pinToWrite)
 {
     int currentAmplitude = analogRead(pinToRead);
@@ -90,4 +91,31 @@ void ClapDetection::detect_claps(int pinToRead, int pinToWrite)
     {
         digitalWrite(pinToWrite, LOW);
     }
+}
+*/
+
+/**
+ * @brief stores amplitude reading in an int and uses ClapDetection class to process this
+ * @param pinToRead
+ * @param pinToWrite
+ */
+bool ClapDetection::detect_claps(int pinToRead)
+{
+    int currentAmplitude = analogRead(pinToRead);
+    return processAmplitude(currentAmplitude);
+
+    /*
+    if (this->processAmplitude(currentAmplitude) == true)
+    {
+        Serial.println("Beep Boop, you wake the computah!"); // Debugging message
+        isLampOn = !isLampOn;
+        digitalWrite(pinToWrite, isLampOn);
+        // analogWrite(pinToWrite, 255);
+        delay(5000);
+    }
+    else if (this->processAmplitude(currentAmplitude) == false)
+    {
+        digitalWrite(pinToWrite, LOW);
+    }
+    */
 }

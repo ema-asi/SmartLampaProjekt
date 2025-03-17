@@ -13,7 +13,10 @@
 #define ClapWindow 5000   // Will serve as calibration for our sound-sensor
 ClapDetection clapdetection(SampleSize, Sound_Treshold, ClapWindow);
 
+bool isLampOn = false;
+
 // Function Declarations:
+void lightOnClaps();
 
 void setup()
 {
@@ -27,22 +30,33 @@ void setup()
 
 void loop()
 {
-  // Serial.print("Light Intensity: ");
-  // Serial.println(digitalRead(PhotoResistor_PIN));
+  Serial.print("Light Intensity: ");
+  Serial.println(digitalRead(PhotoResistor_PIN));
   Serial.print("Sound Intensity: ");
   Serial.println(analogRead(SoundAnalog_PIN));
 
-  clapdetection.detect_claps(SoundAnalog_PIN, LED_PIN);
+  lightOnClaps();
 
-  // digitalWrite(LED_PIN, HIGH);
-  // if (digitalRead(PhotoResistor_PIN) == HIGH)
-  // {
-  //   digitalWrite(LED_PIN, HIGH);
-  // }
-  // else
-  // {
-  //   digitalWrite(LED_PIN, LOW);
-  // }
+  digitalWrite(LED_PIN, HIGH);
+  if (digitalRead(PhotoResistor_PIN) == HIGH)
+  {
+    digitalWrite(LED_PIN, HIGH);
+  }
+  else
+  {
+    digitalWrite(LED_PIN, LOW);
+  }
 
   delay(100);
+}
+
+void lightOnClaps()
+{
+  if (clapdetection.detect_claps(SoundAnalog_PIN))
+  {
+    Serial.println("Beep Boop, you wake the computah!"); // Debugging message
+    isLampOn = !isLampOn;
+    digitalWrite(LED_PIN, isLampOn);
+    delay(5000);
+  }
 }

@@ -16,7 +16,8 @@ public:
     int computeMovingAverage();
     bool processAmplitude(int amplitude);
 
-    void detect_claps(int pinToRead, int pinToWrite);
+    // void detect_claps(int pinToRead, int pinToWrite);
+    bool detect_claps(int pinToRead);
 
 private:
     // Configuration parameters
@@ -31,8 +32,6 @@ private:
     // Variables for clap detection
     int lastPeakTime;
     int clapCount;
-
-    bool isLampOn;
 };
 
 #endif // CLAP_DETECTION_EXAMPLE_H
