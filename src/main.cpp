@@ -1,117 +1,113 @@
 #include <Arduino.h>
-#include <WiFiS3.h>
+#include <LiquidCrystal.h>
+#include <array>
+#include "wifi_arduino.h"
+#include "clap_detection.h"
 
-#include "arduino_secrets.h"
+#define PhotoResistor_PIN A0   // Analog input pin for light sensor
+#define SoundAnalog_PIN A1     // Analog input pin for sound sensor
+#define SoundDigital_PIN 3     // Digital input pin for sound sensor (will eventually be removed)
+#define LED_PIN 4             // PWM-output pin for our light source
+#define Measured_Light_Value 0 // Eventually analog input for light sensor
+#define Sound_Treshold 500     // Will serve as calibration for our sound sensor
 
-#define PhotoResistor_PIN A0                // Will eventually be digital input pin for light-sensor
-#define SoundAnalog_PIN A1                  // Will eventually be analog input pin for sound-sensor
-#define SoundDigital_PIN 3                  // Will eventually be digital input pin for sound-sensor
-#define LED_PIN 4                           // Eventual digital-output pin a light-source
-#define Measured_Light_Value 0              // Eventually analog-input from light sensor
-#define Sound_Treshold 500                  // Will serve as calibration for our sound-sensor
-#define Light_Dark_Value 100                // Sensor value in complete darkness， can changes
-#define Light_Bright_Value 800              // Sensor value in bright light, can changes
-#define WIFI_RECONNECTION_ATTEMPTS 10       // Used in connectToWifi()
-#define WIFI_TIME_BETWEEN_RECONNECTION 1000 // Defined in milliseconds. Used in connectToWifi()
+#define Light_Dark_Value 100   // Sensor value in complete darkness
+#define Light_Bright_Value 800 // Sensor value in bright light
 
-bool isLampOn = false;
+// Works as calibration for our ClapDetection class
+#define SampleSize 5      
+#define Sound_Treshold 20
+#define ClapWindow 5000
+
+ClapDetection clapdetection(SampleSize, Sound_Treshold, ClapWindow);
+bool isLampOn = true;
+int brightness = 0;
 
 // Function Declarations:
 
-void Sound_toggleLampOnClap();
-void ConnectToWifi();
-void Light_AdjustBrightness();
+int light_AdjustBrightness();
+void lightOnClaps();
+void setBrightness();
+void reconnectToWiFi();
 
 void setup()
 {
-  Serial.begin(115200);
-  pinMode(LED_PIN, OUTPUT);
-  pinMode(PhotoResistor_PIN, INPUT);
-  pinMode(SoundAnalog_PIN, INPUT);
-  pinMode(SoundDigital_PIN, INPUT);
+    Serial.begin(115200);
+
+    pinMode(LED_PIN, OUTPUT);
+    pinMode(PhotoResistor_PIN, INPUT);
+    pinMode(SoundAnalog_PIN, INPUT);
+    pinMode(SoundDigital_PIN, INPUT);
+
+    ConnectToWifi();
 }
 
 void loop()
 {
-  Sound_toggleLampOnClap();
-  delay(100);
-  Light_AdjustBrightness();
+    Serial.print("Light Intensity: ");
+    Serial.println(digitalRead(PhotoResistor_PIN));
+    Serial.print("Sound Intensity: ");
+    Serial.println(analogRead(SoundAnalog_PIN));
+
+    brightness = light_AdjustBrightness();
+
+    lightOnClaps();
+    setBrightness();
+
+    // Example usage of LCD-functionality:
+    // lcd.print("Hello World!");
+
+    delay(100);
 }
 
-// Function Definitions:
-
-void Sound_toggleLampOnClap()
+void reconnectToWiFi()
 {
-  Serial.print("Sound Intensity: ");
-  Serial.println(analogRead(SoundAnalog_PIN));
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        ConnectToWifi();
+    }
+}
 
-  if (analogRead(SoundAnalog_PIN) < Sound_Treshold) // Check if the sound intensity is below the threshold
+// TODO: check if map is necessary
+int light_AdjustBrightness()
+{
+    // arduino::map()
+    // Re-maps a number from one range to another. That is, a value of fromLow would get mapped to toLow, a value of fromHigh to toHigh, values in-between to values in-between, etc.
+    // Does not constrain values to within the range, because out-of-range values are sometimes intended and useful. The constrain() function may be used either before or after this function, if limits to the ranges are desired.
+    // Note that the "lower bounds" of either range may be larger or smaller than the "upper bounds" so the map() function may be used to reverse a range of numbers, for example
+    // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ardunio::constrain()
+    // x: the number to constrain Allowed data types: all data types
+    // a: the lower end of the range. Allowed data types: all data types
+    // b: the upper end of the range. Allowed data types: all data types
+    // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+    int brightnessLevel = map(analogRead(PhotoResistor_PIN), Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
+    return constrain(brightnessLevel, 0, 255);
+
+    analogWrite(LED_PIN, 50);
+}
+
+void lightOnClaps()
+{
+  if (clapdetection.detect_claps(SoundAnalog_PIN))
   {
-    isLampOn = !isLampOn;            // Toggle the lamp state
-    digitalWrite(LED_PIN, isLampOn); // Set the LED state based on the lamp state
-  }
-  else
-  {
-    return; // Do nothing if the sound intensity is above the threshold
+    Serial.println("Beep Boop, you wake the computah!"); // Debugging message
+    isLampOn = !isLampOn;
+    setBrightness(); // Make sure the lamp is on/off without delay
+    delay(5000);
   }
 }
 
-void Light_AdjustBrightness()
+void setBrightness()
 {
-  int brightness = map(analogRead(PhotoResistor_PIN), Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
-  brightness = constrain(brightness, 0, 255);                                                        // Ensure brightness value is valid
-
-  Serial.print("Sensor: ");
-  Serial.print(analogRead(PhotoResistor_PIN));
-  Serial.print(" → Brightness: ");
-  Serial.println(brightness);
-
   if (isLampOn)
   {
     analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
+    // analogWrite(LED_PIN, lightSensorAverageReading());  // Proposed solution
   }
   else
   {
     analogWrite(LED_PIN, 0); // Set LED brightness, send PWM signal to LED
-  }
-}
-
-/**
- * @brief Meant to be used in setup() and does NOT handle errors
- */
-void ConnectToWifi()
-{
-  WiFi.disconnect(); // Ensures a clean start
-  WiFi.end();        // Hard reset of the WiFi module
-  delay(1000);       // Give it time(ms) to reset
-
-  int numberOfAttempts = 0;
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    Serial.println("Attempting to connect to Wi-Fi.");
-    WiFi.begin(SSID, PASSWORD);
-    if (WiFi.status() == WL_CONNECTED)
-    {
-      Serial.println("Connected!");
-      numberOfAttempts = 0;
-      return;
-    }
-    Serial.print("Attempt: ");
-    Serial.print(numberOfAttempts + 1);
-    Serial.print("\n");
-
-    Serial.print("Wi-Fi Status Code: ");
-    Serial.print(WiFi.status());
-    Serial.print("\n");
-
-    if (numberOfAttempts >= WIFI_RECONNECTION_ATTEMPTS)
-    {
-      Serial.println("Connection failed.");
-      return;
-    }
-
-    numberOfAttempts++;
-    delay(WIFI_TIME_BETWEEN_RECONNECTION);
   }
 }
