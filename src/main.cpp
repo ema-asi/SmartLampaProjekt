@@ -1,6 +1,4 @@
 #include <Arduino.h>
-#include <LiquidCrystal.h>
-#include <array>
 #include "wifi_arduino.h"
 #include "clap_detection.h"
 
@@ -44,6 +42,8 @@ void setup()
 
 void loop()
 {
+    reconnectToWiFi();
+    
     Serial.print("Light Intensity: ");
     Serial.println(digitalRead(PhotoResistor_PIN));
     Serial.print("Sound Intensity: ");
@@ -53,9 +53,6 @@ void loop()
 
     lightOnClaps();
     setBrightness();
-
-    // Example usage of LCD-functionality:
-    // lcd.print("Hello World!");
 
     delay(100);
 }
@@ -75,12 +72,12 @@ int light_AdjustBrightness()
     // Re-maps a number from one range to another. That is, a value of fromLow would get mapped to toLow, a value of fromHigh to toHigh, values in-between to values in-between, etc.
     // Does not constrain values to within the range, because out-of-range values are sometimes intended and useful. The constrain() function may be used either before or after this function, if limits to the ranges are desired.
     // Note that the "lower bounds" of either range may be larger or smaller than the "upper bounds" so the map() function may be used to reverse a range of numbers, for example
-    // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     // ardunio::constrain()
     // x: the number to constrain Allowed data types: all data types
     // a: the lower end of the range. Allowed data types: all data types
     // b: the upper end of the range. Allowed data types: all data types
-    // -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
     int brightnessLevel = map(analogRead(PhotoResistor_PIN), Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
     return constrain(brightnessLevel, 0, 255);
