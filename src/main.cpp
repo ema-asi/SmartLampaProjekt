@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include "wifi_arduino.h"
 #include "clap_detection.h"
+#include <LiquidCrystal.h>
+#include <array>
 
 #define PhotoResistor_PIN A0   // Analog input pin for light sensor
 #define SoundAnalog_PIN A1     // Analog input pin for sound sensor
@@ -8,15 +10,16 @@
 #define LED_PIN 4             // PWM-output pin for our light source
 #define Measured_Light_Value 0 // Eventually analog input for light sensor
 #define Sound_Treshold 500     // Will serve as calibration for our sound sensor
-
 #define Light_Dark_Value 100   // Sensor value in complete darkness
 #define Light_Bright_Value 800 // Sensor value in bright light
-
-// Works as calibration for our ClapDetection class
+// Below works as calibration for our ClapDetection class
 #define SampleSize 5      
 #define Sound_Treshold 20
 #define ClapWindow 5000
 
+const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+
+LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 ClapDetection clapdetection(SampleSize, Sound_Treshold, ClapWindow);
 bool isLampOn = true;
 int brightness = 0;
@@ -31,6 +34,7 @@ void reconnectToWiFi();
 void setup()
 {
     Serial.begin(115200);
+    lcd.begin(16, 2); // Sets up the display, defining number or rows(Y) and columns(X)
 
     pinMode(LED_PIN, OUTPUT);
     pinMode(PhotoResistor_PIN, INPUT);
@@ -54,6 +58,9 @@ void loop()
     lightOnClaps();
     setBrightness();
 
+    // Example usage of LCD-functionality:
+    lcd.print("Hello World!");
+
     delay(100);
 }
 
@@ -65,7 +72,6 @@ void reconnectToWiFi()
     }
 }
 
-// TODO: check if map is necessary
 int light_AdjustBrightness()
 {
     // arduino::map()
@@ -85,11 +91,42 @@ int light_AdjustBrightness()
     analogWrite(LED_PIN, 50);
 }
 
+// Proposed replacement for above code
+int lightSensorAverageReading()
+{
+    std::array<int, 5> brightnessValues{};
+    int sensor_input{};
+    int8_t index = 0;
+
+    if (index > 4)
+    {
+        index = 0;
+    }
+
+    sensor_input = analogRead(PhotoResistor_PIN);
+    if (sensor_input > 500)
+    {
+        brightnessValues[index] = 500;
+    }
+    else if (sensor_input < 0)
+    {
+        brightnessValues[index] = 0;
+    }
+    index++;
+
+    int sum{};
+    for (int i = 0; i < 4; i++)
+    {
+        sum += brightnessValues[i];
+    }
+    return sum;
+}
+
 void lightOnClaps()
 {
   if (clapdetection.detect_claps(SoundAnalog_PIN))
   {
-    Serial.println("Beep Boop, you wake the computah!"); // Debugging message
+    Serial.println("Clapdetection says: Beep Boop, you wake the computah!"); // Debugging message
     isLampOn = !isLampOn;
     setBrightness(); // Make sure the lamp is on/off without delay
     delay(5000);
