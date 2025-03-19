@@ -10,7 +10,7 @@
 ## 1. Introduktion
 
 ### 1.1 Syfte
-Detta dokument specificerar kraven och funktionaliteten för "Smart Lampa", en intelligent belysningslösning som reagerar på både ljud- och ljusnivåer i dess omgivning.
+Detta dokument specificerar kraven och funktionaliteten för våran smarta lampa, en intelligent belysningslösning som reagerar på både ljud- och ljusnivåer i dess omgivning.
 
 ### 1.2 Målgrupp
 Denna SRS riktar sig till utvecklare och produktägare som är involverade i utvecklingen av den smarta lampan, samt undervisare för bedömning.
@@ -19,6 +19,7 @@ Denna SRS riktar sig till utvecklare och produktägare som är involverade i utv
 Smart Lampa är designad för att förbättra inomhusbelysning genom att automatiskt anpassa sig efter rummets förhållanden. Huvudfunktionerna är:
 - **Ljudaktivering:** Lampan tänds när ljud detekteras i mörka miljöer.
 - **Automatisk ljusstyrka:** Justerar sin ljusstyrka baserat på omgivningens ljusnivå.
+- **Interaktiv statusskärm:** Lampan har funktionalitet för en mindre status display. Denna kan visa tid, ute temperatur m.m.
 - **Flera lägen:** Möjlighet att byta till olika ljuslägen, såsom nattläge och partyläge (planerad för framtida versioner).
 
 ---
@@ -26,7 +27,7 @@ Smart Lampa är designad för att förbättra inomhusbelysning genom att automat
 ## 2. Allmän beskrivning
 
 ### 2.1 Produktperspektiv
-Den smarta lampan är en fristående enhet men kan potentiellt integreras med smarta hem-ekosystem som Google Home eller Alexa.
+Den smarta lampan är en fristående enhet men kan vid vidare utveckling integreras med smarta hem-ekosystem som Google Home eller Alexa.
 
 ### 2.2 Produktfunktioner
 - **Ljudaktivering:** Lampan tänds vid upptäckt ljud i mörka miljöer.
@@ -36,18 +37,19 @@ Den smarta lampan är en fristående enhet men kan potentiellt integreras med sm
 ### 2.3 Användningsfall
 - **Scenario 1:** En person går in i ett mörkt rum och klappar händerna - lampan tänds automatiskt.
 - **Scenario 2:** Ett rum blir mörkare på kvällen - lampans ljusstyrka minskar för att spara energi.
-- **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt (vid framtida versioner).
+- **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt (framtida utvecklingsidé).
+- **Scenario 4:** Användaren kan använda Google Home eller Alexa för att styra lampan, schemalägga funktioner m.m (framtida utvecklingsidé)
 
 ---
 
 ## 3. Hårdvara
 
-| **Part Name**               | **Part Type**             | **Beskrivning**                                                            | **Dokumentation**                                                   |
-|-----------------------------|---------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
-| Arduino Uno Rev4 Wifi       | Mainboard                 | Huvudenhet som kör kod, läser sensorer och kontrollerar utdata             | https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf |
-| KY-037 Condenser Microphone | Sensor-input              | Ska sensorn vara analog eller digital? Hur använder vi den? Pin?           | https://drive.google.com/file/d/16PGgPSGamAiOMzwpldFdIGFUXAehb9Q6/  |
-| LM393 Light Detector        | Sensor-input              | Digital input för styra ljusnivå baserat på omgivningen.                   |                                                                     |
-|                             |                           |                                                                            |                                                                     |
+| **Part Name**                  | **Part Type**             | **Beskrivning**                                                            | **Dokumentation**                                                   |
+|--------------------------------|---------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
+| Arduino Uno Rev4 Wifi          | Mainboard                 | Huvudenhet som kör kod, läser sensorer och kontrollerar utdata             | https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf |
+| KY-037 Condenser Microphone    | Sensor-input              | Analog input för läsa av omgivningens ljudnivå                             | https://drive.google.com/file/d/16PGgPSGamAiOMzwpldFdIGFUXAehb9Q6/  |
+| Adafruit LTR-303 Light Sensor  | Analog Sensor Input       | Analog input för läsa av omgivningens ljusnivå                             | https://drive.google.com/file/d/1uATHjSoqLR4EFpkEzeqev2WbFBwIXCdN/  |
+|                                |                           |                                                                            |                                                                     |
 
 ---
 
