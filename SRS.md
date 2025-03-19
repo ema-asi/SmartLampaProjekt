@@ -46,9 +46,16 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 | **Part Name**                  | **Part Type**             | **Beskrivning**                                                            | **Dokumentation**                                                   |
 |--------------------------------|---------------------------|----------------------------------------------------------------------------|---------------------------------------------------------------------|
 | Arduino Uno Rev4 Wifi          | Mainboard                 | Huvudenhet som kör kod, läser sensorer och kontrollerar utdata             | https://docs.arduino.cc/resources/datasheets/ABX00087-datasheet.pdf |
-| KY-037 Condenser Microphone    | Sensor-input              | Analog input för läsa av omgivningens ljudnivå                             | https://drive.google.com/file/d/16PGgPSGamAiOMzwpldFdIGFUXAehb9Q6/  |
+| KY-037 Condenser Microphone    | Analog Sensor Input       | Analog input för läsa av omgivningens ljudnivå                             | https://drive.google.com/file/d/16PGgPSGamAiOMzwpldFdIGFUXAehb9Q6/  |
 | Adafruit LTR-303 Light Sensor  | Analog Sensor Input       | Analog input för läsa av omgivningens ljusnivå                             | https://drive.google.com/file/d/1uATHjSoqLR4EFpkEzeqev2WbFBwIXCdN/  |
 |                                |                           |                                                                            |                                                                     |
+
+## 3.1 Hårdvarubibliotek
+
+| **Library name**                  | **Compatible Hardware**                        | **Beskrivning**                                                            | **Dokumentation**                                           |
+|-----------------------------------|------------------------------------------------|----------------------------------------------------------------------------|-------------------------------------------------------------|
+| LiquidCrystal.h                   | LCD-Display                                    | Library to control many popular                                            |                                                             |
+| WiFiS3.h                          | Arduino Uno Rev4 Wifi                          | Part of core Arduino library to handle Wi-Fi connectivity                  |                                                             |
 
 ---
 
