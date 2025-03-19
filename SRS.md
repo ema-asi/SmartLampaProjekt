@@ -20,7 +20,6 @@ Smart Lampa är designad för att förbättra inomhusbelysning genom att automat
 - **Ljudaktivering:** Lampan tänds när ljud detekteras i mörka miljöer.
 - **Automatisk ljusstyrka:** Justerar sin ljusstyrka baserat på omgivningens ljusnivå.
 - **Interaktiv statusskärm:** Lampan har funktionalitet för en mindre status display. Denna kan visa tid, ute temperatur m.m.
-- **Flera lägen:** Möjlighet att byta till olika ljuslägen, såsom nattläge och partyläge (planerad för framtida versioner).
 
 ---
 
@@ -32,13 +31,13 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 ### 2.2 Produktfunktioner
 - **Ljudaktivering:** Lampan tänds vid upptäckt ljud i mörka miljöer.
 - **Automatisk ljusstyrka:** Justerar sig efter omgivningens ljusnivå.
-- **Färg- och ljuslägen:** Stöd för olika belysningslägen i framtida versioner.
+- **Färg- och ljuslägen:** Stöd för olika belysningslägen i framtida versioner. (Framtida utvecklingsidé)
 
 ### 2.3 Användningsfall
 - **Scenario 1:** En person går in i ett mörkt rum och klappar händerna - lampan tänds automatiskt.
 - **Scenario 2:** Ett rum blir mörkare på kvällen - lampans ljusstyrka minskar för att spara energi.
-- **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt (framtida utvecklingsidé).
-- **Scenario 4:** Användaren kan använda Google Home eller Alexa för att styra lampan, schemalägga funktioner m.m (framtida utvecklingsidé)
+- **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt. (Framtida utvecklingsidé)
+- **Scenario 4:** Användaren kan använda Google Home eller Alexa för att styra lampan, schemalägga funktioner m.m. (Framtida utvecklingsidé)
 
 ---
 
@@ -57,18 +56,18 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 
 ### 4.1 Funktionskrav
 
-| **ID** | **Krav**              | **Beskrivning**                                                                     |
-|--------|-----------------------|-------------------------------------------------------------------------------------|
-| F1     | Ljudaktivering        | Lampan ska tändas vid ljudsignaler i mörka miljöer.                                 |
-| F2     | Automatisk ljusstyrka | Ljusstyrkan ska justeras efter omgivande ljus.                                      |
-| F3     | Olika ljuslägen       | Lampan ska kunna byta ljusläge, t.ex. nattläge, partyläge (vid framtida versioner). |
+| **ID** | **Krav**                 | **Beskrivning**                                                                      |
+|--------|--------------------------|--------------------------------------------------------------------------------------|
+| F1     | Ljudaktivering           | Lampan ska tändas vid ljudsignaler i mörka miljöer.                                  |
+| F2     | Automatisk ljusstyrka    | Ljusstyrkan ska justeras efter omgivande ljus.                                       |
+| F3     | Fungerande Statusdisplay | Lampan ska ha fungerande display styrning men avgränsar användning pga brist på tid. |
 
 ### 4.2 Icke-funktionella krav
 
 | **ID** | **Krav**           | **Beskrivning**                                                               |
 |--------|--------------------|-------------------------------------------------------------------------------|
 | NF1    | Utvecklingsmiljö   | Koden ska skrivas i C++.                                                      |
-| NF2    | Hårdvaruplattform  | Lampan ska styras av en Arduino Uno R4 WiFi-enhet.                            |
+| NF2    | Hårdvaruplattform  | Lampan ska styras av en Arduino Uno R4 WiFi-mikrokontroller.                  |
 | NF3    | Responstid         | Lampan ska reagera på ljud och ljus-förändringar inom X sekunder.             |
 | NF4    | Energibesparing    | Lampan ska vara optimerad för låg strömförbrukning.                           |
 | NF5    | Kompatibilitet     | Lampan ska kunna integreras med smarta hem-system (vid framtida versioner).   |
@@ -76,7 +75,7 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 ---
 
 ## 5. Begränsningar och Antaganden
-- Lampan ska fungera inomhus.
+- Lampan ska fungera i inomhus miljö.
 - Vi siktar på strömgivning med likspänning och **inte** växelström.
 - En enkel mikrofon och ljussensor ska räcka för att detektera ljud och ljusförändringar.
 
@@ -86,7 +85,8 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 - Implementering av en app för att styra lampan via smartphone.
 - Möjlighet att schemalägga ljusinställningar.
 - Röststyrning via smarta assistenter.
-- Stöd för flerfärgade LED-lampor / sammankoppling med flera.
+- Stöd för flerfärgade LED-lampor / sammankoppling med flera enheter.
+- Stöd för flera lägen (möjligtvis genom en mobilapp eller liknande).
 
 ---
 
