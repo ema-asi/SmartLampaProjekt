@@ -83,7 +83,7 @@ void reconnectToWiFi()
  */
 int lightSensorAverageReading()
 {
-  const int sizeOfArray = 190;                            // Size of the array to store brightness values
+  const int sizeOfArray = 20;                             // Size of the array to store brightness values
   static std::array<int, sizeOfArray> brightnessValues{}; // Array to store the last 5 brightness values
   static int8_t index = 0;                                // Index to keep track of the current position in the array
   int sum{};                                              // Variable to store the sum of brightness values
