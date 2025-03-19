@@ -19,6 +19,7 @@
 #define ClapWindow 5000
 
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
+extern "C" char *sbrk(int i);
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 ClapDetection clapdetection(SampleSize, Sound_Treshold, ClapWindow);
@@ -27,6 +28,8 @@ int brightness = 0;
 
 // Function Declarations:
 
+int getFreeMemory();
+void printFreeMemory();
 void setBrightness();
 void reconnectToWiFi();
 
@@ -56,6 +59,8 @@ void loop()
 
   lcd.print("Hello World!"); // Example usage of LCD-functionality:
 
+  printFreeMemory();
+
   delay(100);
 }
 
@@ -78,7 +83,7 @@ void reconnectToWiFi()
  */
 int lightSensorAverageReading()
 {
-  const int sizeOfArray = 20;                             // Size of the array to store brightness values
+  const int sizeOfArray = 190;                            // Size of the array to store brightness values
   static std::array<int, sizeOfArray> brightnessValues{}; // Array to store the last 5 brightness values
   static int8_t index = 0;                                // Index to keep track of the current position in the array
   int sum{};                                              // Variable to store the sum of brightness values
@@ -113,4 +118,18 @@ void setBrightness()
   {
     analogWrite(LED_PIN, 0); // Set LED brightness, send PWM signal to LED
   }
+}
+
+// This code shows the remaining free memory between the heap and the stack
+int getFreeMemory()
+{
+  char top;
+  return &top - sbrk(0);
+}
+
+void printFreeMemory()
+{
+  Serial.print("Free Memory: ");
+  Serial.print(getFreeMemory());
+  Serial.println(" Bytes.");
 }
