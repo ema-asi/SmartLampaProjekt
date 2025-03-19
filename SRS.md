@@ -7,6 +7,17 @@
 
 ---
 
+# Innehållsförteckning
+1. [Introduktion](#1-introduktion)
+2. [Allmän beskrivning](#2-allmän-beskrivning)
+3. [Hårdvara och bibliotek](#3-hårdvara)
+4. [Specifika krav](#4-specifika-krav)
+5. [Begränsningar och antaganden](#5-begränsningar-och-antaganden)
+6. [Framtida utvecklingsförslag](#6-framtida-utvecklingsförslag)
+7. [Slutsats](#7-slutsats)
+
+---
+
 ## 1. Introduktion
 
 ### 1.1 Syfte
@@ -36,7 +47,7 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 ### 2.3 Användningsfall
 - **Scenario 1:** En person går in i ett mörkt rum och klappar händerna - lampan tänds automatiskt.
 - **Scenario 2:** Ett rum blir mörkare på kvällen - lampans ljusstyrka minskar för att spara energi.
-- **Scenario 3:** Användaren vill aktivera ett partyläge där lampan ändrar färg dynamiskt. (Framtida utvecklingsidé)
+- **Scenario 3:** Användaren kan aktivera ett olika lägen, exempelvis ett partyläge där lampan ändrar färg ihop med musik. (Framtida utvecklingsidé)
 - **Scenario 4:** Användaren kan använda Google Home eller Alexa för att styra lampan, schemalägga funktioner m.m. (Framtida utvecklingsidé)
 
 ---
@@ -52,16 +63,17 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 
 ## 3.1 Hårdvarubibliotek
 
-| **Library name**                  | **Compatible Hardware**                        | **Beskrivning**                                                            | **Dokumentation**                                           |
-|-----------------------------------|------------------------------------------------|----------------------------------------------------------------------------|-------------------------------------------------------------|
-| LiquidCrystal.h                   | LCD-Display                                    | Library to control many popular                                            |                                                             |
-| WiFiS3.h                          | Arduino Uno Rev4 Wifi                          | Part of core Arduino library to handle Wi-Fi connectivity                  |                                                             |
+| **Library name**                  | **Relevant Hardware**                          | **Beskrivning**                                                            | **Dokumentation**                                            |
+|-----------------------------------|------------------------------------------------|----------------------------------------------------------------------------|--------------------------------------------------------------|
+| LiquidCrystal.h                   | LCD-Display                                    | Library to control many popular                                            | https://docs.arduino.cc/libraries/liquidcrystal/             |
+| WiFiS3.h                          | Arduino Uno Rev4 Wifi                          | Part of core Arduino library to handle Wi-Fi connectivity                  | https://docs.arduino.cc/tutorials/uno-r4-wifi/wifi-examples/ |
+|                                   |                                                |                                                                            |                                                              |
 
 ---
 
 ## 4. Specifika krav
 
-### 4.1 Funktionskrav
+### 4.1 Funktionella krav
 
 | **ID** | **Krav**                 | **Beskrivning**                                                                      |
 |--------|--------------------------|--------------------------------------------------------------------------------------|
@@ -83,7 +95,7 @@ Den smarta lampan är en fristående enhet men kan vid vidare utveckling integre
 
 ## 5. Begränsningar och Antaganden
 - Lampan ska fungera i inomhus miljö.
-- Vi siktar på strömgivning med likspänning och **inte** växelström.
+- Vi siktar på strömgivning med likspänning och inte växelström.
 - En enkel mikrofon och ljussensor ska räcka för att detektera ljud och ljusförändringar.
 
 ---
