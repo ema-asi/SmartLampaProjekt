@@ -10,8 +10,8 @@
 #define LED_PIN 6              // PWM-output pin for our light source
 #define Measured_Light_Value 0 // Eventually analog input for light sensor
 #define Sound_Treshold 500     // Will serve as calibration for our sound sensor
-#define Light_Dark_Value 100   // Sensor value in complete darkness
-#define Light_Bright_Value 800 // Sensor value in bright light
+#define Light_Dark_Value 115   // Sensor value in complete darkness
+#define Light_Bright_Value 870 // Sensor value in bright light
 // Below works as calibration for our ClapDetection class
 #define SampleSize 5
 #define Sound_Treshold 20
@@ -26,7 +26,7 @@ int brightness = 0;
 
 // Function Declarations:
 
-int light_AdjustBrightness();
+/* int light_AdjustBrightness(); */
 void lightOnClaps();
 void setBrightness();
 void reconnectToWiFi();
@@ -49,13 +49,13 @@ void loop()
   reconnectToWiFi();
 
   Serial.print("Light Intensity: ");
-  Serial.println(digitalRead(PhotoResistor_PIN));
+  Serial.println(analogRead(PhotoResistor_PIN));
   Serial.print("Sound Intensity: ");
   Serial.println(analogRead(SoundAnalog_PIN));
 
-  brightness = light_AdjustBrightness();
+  // brightness = light_AdjustBrightness();
 
-  lightOnClaps();
+  // lightOnClaps();
   setBrightness();
 
   // Example usage of LCD-functionality:
@@ -72,6 +72,8 @@ void reconnectToWiFi()
   }
 }
 
+// Starting process of removing this
+/*
 int light_AdjustBrightness()
 {
   // arduino::map()
@@ -90,55 +92,50 @@ int light_AdjustBrightness()
 
   analogWrite(LED_PIN, 50);
 }
+*/
 
 // Proposed replacement for above code
+/**
+ * @brief Reads the light sensor and calculates the average brightness value.
+ *
+ * This function reads the light sensor value, scales it to a PWM range (0-255),
+ * and maintains a running average of the last 5 readings to smooth out fluctuations.
+ *
+ * @return int The average brightness value scaled to the range 0-255.
+ */
 int lightSensorAverageReading()
 {
-  std::array<int, 5> brightnessValues{};
-  int sensor_input{};
-  int8_t index = 0;
+  const int sizeOfArray = 5;                              // Size of the array to store brightness values
+  static std::array<int, sizeOfArray> brightnessValues{}; // Array to store the last 5 brightness values
+  static int8_t index = 0;                                // Index to keep track of the current position in the array
+  int sum{};                                              // Variable to store the sum of brightness values
 
-  if (index > 4)
+  int sensor_input = analogRead(PhotoResistor_PIN); // Read the current value from the light sensor
+
+  // Scale the sensor input to a range of 0-255
+  int scaled_input = (sensor_input - Light_Dark_Value) * 255 / (Light_Bright_Value - Light_Dark_Value);
+
+  // Constrain the scaled input to be within the range 0-255
+  scaled_input = (scaled_input > 255) ? 255 : (scaled_input < 0) ? 0
+                                                                 : scaled_input;
+
+  brightnessValues[index] = scaled_input; // Store the scaled input in the array
+  index = (index + 1) % sizeOfArray;      // Increment the index and wrap around if necessary
+
+  for (const int &elements : brightnessValues) // Calculate the sum of the brightness values in the array
   {
-    index = 0;
+    sum += elements;
   }
 
-  sensor_input = analogRead(PhotoResistor_PIN);
-  if (sensor_input > 500)
-  {
-    brightnessValues[index] = 500;
-  }
-  else if (sensor_input < 0)
-  {
-    brightnessValues[index] = 0;
-  }
-  index++;
-
-  int sum{};
-  for (int i = 0; i < 4; i++)
-  {
-    sum += brightnessValues[i];
-  }
-  return sum;
-}
-
-void lightOnClaps()
-{
-  if (clapdetection.detect_claps(SoundAnalog_PIN))
-  {
-    Serial.println("Clapdetection says: Beep Boop, you wake the computah!"); // Debugging message
-    isLampOn = !isLampOn;
-    setBrightness(); // Make sure the lamp is on/off without delay
-    delay(5000);
-  }
+  return (sum / sizeOfArray); // Return the average brightness value
 }
 
 void setBrightness()
 {
   if (isLampOn)
   {
-    analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
-    // analogWrite(LED_PIN, lightSensorAverageReading());  // Proposed solution
+    // analogWrite(LED_PIN, brightness); // Set LED brightness, send PWM signal to LED
+    analogWrite(LED_PIN, lightSensorAverageReading()); // Proposed solution
   }
   else
   {
