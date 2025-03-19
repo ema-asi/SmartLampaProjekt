@@ -6,14 +6,14 @@
 
 #define PhotoResistor_PIN A0   // Analog input pin for light sensor
 #define SoundAnalog_PIN A1     // Analog input pin for sound sensor
-#define SoundDigital_PIN 3     // Digital input pin for sound sensor (will eventually be removed)
-#define LED_PIN 4             // PWM-output pin for our light source
+#define SoundDigital_PIN 7     // Digital input pin for sound sensor (will eventually be removed)
+#define LED_PIN 6              // PWM-output pin for our light source
 #define Measured_Light_Value 0 // Eventually analog input for light sensor
 #define Sound_Treshold 500     // Will serve as calibration for our sound sensor
 #define Light_Dark_Value 100   // Sensor value in complete darkness
 #define Light_Bright_Value 800 // Sensor value in bright light
 // Below works as calibration for our ClapDetection class
-#define SampleSize 5      
+#define SampleSize 5
 #define Sound_Treshold 20
 #define ClapWindow 5000
 
@@ -33,93 +33,93 @@ void reconnectToWiFi();
 
 void setup()
 {
-    Serial.begin(115200);
-    lcd.begin(16, 2); // Sets up the display, defining number or rows(Y) and columns(X)
+  Serial.begin(115200);
+  lcd.begin(16, 2); // Sets up the display, defining number or rows(Y) and columns(X)
 
-    pinMode(LED_PIN, OUTPUT);
-    pinMode(PhotoResistor_PIN, INPUT);
-    pinMode(SoundAnalog_PIN, INPUT);
-    pinMode(SoundDigital_PIN, INPUT);
+  pinMode(LED_PIN, OUTPUT);
+  pinMode(PhotoResistor_PIN, INPUT);
+  pinMode(SoundAnalog_PIN, INPUT);
+  pinMode(SoundDigital_PIN, INPUT);
 
-    ConnectToWifi();
+  ConnectToWifi();
 }
 
 void loop()
 {
-    reconnectToWiFi();
-    
-    Serial.print("Light Intensity: ");
-    Serial.println(digitalRead(PhotoResistor_PIN));
-    Serial.print("Sound Intensity: ");
-    Serial.println(analogRead(SoundAnalog_PIN));
+  reconnectToWiFi();
 
-    brightness = light_AdjustBrightness();
+  Serial.print("Light Intensity: ");
+  Serial.println(digitalRead(PhotoResistor_PIN));
+  Serial.print("Sound Intensity: ");
+  Serial.println(analogRead(SoundAnalog_PIN));
 
-    lightOnClaps();
-    setBrightness();
+  brightness = light_AdjustBrightness();
 
-    // Example usage of LCD-functionality:
-    lcd.print("Hello World!");
+  lightOnClaps();
+  setBrightness();
 
-    delay(100);
+  // Example usage of LCD-functionality:
+  lcd.print("Hello World!");
+
+  delay(100);
 }
 
 void reconnectToWiFi()
 {
-    if (WiFi.status() != WL_CONNECTED)
-    {
-        ConnectToWifi();
-    }
+  if (WiFi.status() != WL_CONNECTED)
+  {
+    ConnectToWifi();
+  }
 }
 
 int light_AdjustBrightness()
 {
-    // arduino::map()
-    // Re-maps a number from one range to another. That is, a value of fromLow would get mapped to toLow, a value of fromHigh to toHigh, values in-between to values in-between, etc.
-    // Does not constrain values to within the range, because out-of-range values are sometimes intended and useful. The constrain() function may be used either before or after this function, if limits to the ranges are desired.
-    // Note that the "lower bounds" of either range may be larger or smaller than the "upper bounds" so the map() function may be used to reverse a range of numbers, for example
-    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-    // ardunio::constrain()
-    // x: the number to constrain Allowed data types: all data types
-    // a: the lower end of the range. Allowed data types: all data types
-    // b: the upper end of the range. Allowed data types: all data types
-    // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // arduino::map()
+  // Re-maps a number from one range to another. That is, a value of fromLow would get mapped to toLow, a value of fromHigh to toHigh, values in-between to values in-between, etc.
+  // Does not constrain values to within the range, because out-of-range values are sometimes intended and useful. The constrain() function may be used either before or after this function, if limits to the ranges are desired.
+  // Note that the "lower bounds" of either range may be larger or smaller than the "upper bounds" so the map() function may be used to reverse a range of numbers, for example
+  // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // ardunio::constrain()
+  // x: the number to constrain Allowed data types: all data types
+  // a: the lower end of the range. Allowed data types: all data types
+  // b: the upper end of the range. Allowed data types: all data types
+  // ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-    int brightnessLevel = map(analogRead(PhotoResistor_PIN), Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
-    return constrain(brightnessLevel, 0, 255);
+  int brightnessLevel = map(analogRead(PhotoResistor_PIN), Light_Dark_Value, Light_Bright_Value, 0, 255); // Converts sensor values to PWM range (0-255), If sensor = 100 → brightness = 0 (LED off),If sensor = 800 → brightness = 255 (max brightness)
+  return constrain(brightnessLevel, 0, 255);
 
-    analogWrite(LED_PIN, 50);
+  analogWrite(LED_PIN, 50);
 }
 
 // Proposed replacement for above code
 int lightSensorAverageReading()
 {
-    std::array<int, 5> brightnessValues{};
-    int sensor_input{};
-    int8_t index = 0;
+  std::array<int, 5> brightnessValues{};
+  int sensor_input{};
+  int8_t index = 0;
 
-    if (index > 4)
-    {
-        index = 0;
-    }
+  if (index > 4)
+  {
+    index = 0;
+  }
 
-    sensor_input = analogRead(PhotoResistor_PIN);
-    if (sensor_input > 500)
-    {
-        brightnessValues[index] = 500;
-    }
-    else if (sensor_input < 0)
-    {
-        brightnessValues[index] = 0;
-    }
-    index++;
+  sensor_input = analogRead(PhotoResistor_PIN);
+  if (sensor_input > 500)
+  {
+    brightnessValues[index] = 500;
+  }
+  else if (sensor_input < 0)
+  {
+    brightnessValues[index] = 0;
+  }
+  index++;
 
-    int sum{};
-    for (int i = 0; i < 4; i++)
-    {
-        sum += brightnessValues[i];
-    }
-    return sum;
+  int sum{};
+  for (int i = 0; i < 4; i++)
+  {
+    sum += brightnessValues[i];
+  }
+  return sum;
 }
 
 void lightOnClaps()
