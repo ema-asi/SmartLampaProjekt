@@ -30,6 +30,8 @@ int brightness = 0;
 
 int getFreeMemory();
 void printFreeMemory();
+int lightSensorAverageReading();
+void lightOnClaps();
 void setBrightness();
 void reconnectToWiFi();
 
@@ -51,15 +53,17 @@ void loop()
   reconnectToWiFi();
 
   Serial.print("Light Intensity: ");
-  Serial.println(analogRead(PhotoResistor_PIN));
+  Serial.println(digitalRead(PhotoResistor_PIN));
   Serial.print("Sound Intensity: ");
   Serial.println(analogRead(SoundAnalog_PIN));
 
+  brightness = lightSensorAverageReading();
+
+  lightOnClaps();
   setBrightness();
 
-  lcd.print("Hello World!"); // Example usage of LCD-functionality:
-
-  printFreeMemory();
+  // Example usage of LCD-functionality:
+  lcd.print("Hello World!");
 
   delay(100);
 }
@@ -117,6 +121,17 @@ void setBrightness()
   else
   {
     analogWrite(LED_PIN, 0); // Set LED brightness, send PWM signal to LED
+  }
+}
+
+void lightOnClaps()
+{
+  if (clapdetection.detect_claps(SoundAnalog_PIN))
+  {
+    Serial.println("Clapdetection says: Beep Boop, you wake the computah!"); // Debugging message
+    isLampOn = !isLampOn;
+    setBrightness(); // Make sure the lamp is on/off without delay
+    delay(5000);
   }
 }
 
