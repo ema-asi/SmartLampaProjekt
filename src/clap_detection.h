@@ -12,14 +12,15 @@ public:
     // Destructor (Header)
     ~ClapDetection();
 
-    void updateSoundSamples(int newSample);
-    int computeMovingAverage();
-    bool processAmplitude(int amplitude);
-
     // void detect_claps(int pinToRead, int pinToWrite);
     bool detect_claps(int pinToRead);
 
 private:
+    // Function Declarations
+    void updateSoundSamples(int newSample);
+    int computeMovingAverage();
+    bool processAmplitude(int amplitude);
+
     // Configuration parameters
     const int sampleSize;      // Number of samples in the moving average
     const int amplitudeMargin; // Margin above the baseline to consider a peak
