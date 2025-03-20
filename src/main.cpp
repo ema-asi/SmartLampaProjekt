@@ -53,7 +53,7 @@ void loop()
   reconnectToWiFi();
 
   Serial.print("Light Intensity: ");
-  Serial.println(digitalRead(PhotoResistor_PIN));
+  Serial.println(analogRead(PhotoResistor_PIN));
   Serial.print("Sound Intensity: ");
   Serial.println(analogRead(SoundAnalog_PIN));
 
