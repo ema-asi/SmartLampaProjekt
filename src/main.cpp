@@ -1,8 +1,10 @@
 #include <Arduino.h>
+#include <LiquidCrystal.h>
+#include <Wire.h>
+#include <array>
+#include "Adafruit_LTR329_LTR303.h"
 #include "wifi_arduino.h"
 #include "clap_detection.h"
-#include <LiquidCrystal.h>
-#include <array>
 
 #define PhotoResistor_PIN A0   // Analog input pin for light sensor
 #define SoundAnalog_PIN A1     // Analog input pin for sound sensor
@@ -23,6 +25,8 @@ extern "C" char *sbrk(int i);
 
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 ClapDetection clapdetection(SampleSize, Sound_Treshold, ClapWindow);
+Adafruit_LTR303 ltr = Adafruit_LTR303();
+
 bool isLampOn = false;
 int brightness = 0;
 
@@ -40,6 +44,17 @@ void setup()
     Serial.begin(115200);
     lcd.begin(16, 2); // Sets up the display, defining number or rows(Y) and columns(X)
 
+    // I think this is what is required for the LTR sensor
+    ltr.begin(); // Inits it
+    ltr.setGain(LTR3XX_GAIN_96); // Sets gain i,e sensitivity
+    ltr.setIntegrationTime(LTR3XX_INTEGTIME_100); // Sets time we expect a whole signal to be in (i,e one signal is complete in 100 ms)
+    ltr.setMeasurementRate(LTR3XX_MEASRATE_200); // Works with above function, this defines how often we measure and for how long
+    ltr.enableInterrupt(false);
+    ltr.setInterruptPolarity(false);
+    ltr.setLowThreshold(2000);
+    ltr.setHighThreshold(30000);
+    ltr.setIntPersistance(4);
+
     pinMode(LED_PIN, OUTPUT);
     pinMode(PhotoResistor_PIN, INPUT);
     pinMode(SoundAnalog_PIN, INPUT);
@@ -47,14 +62,31 @@ void setup()
 
     // WiFi Related Setup
     lcd.println("Connecting to WiFi!");
-    ConnectToWifi();
+    // ConnectToWifi();
     lcd.clear();
     lcd.println("Established connection!");
 }
 
 void loop()
 {
-    reconnectToWiFi();
+    // This all belongs to LTR-303 testing
+    bool valid;
+    uint16_t visible_plus_ir, infrared;
+
+    if (ltr.newDataAvailable())
+    {
+        valid = ltr.readBothChannels(visible_plus_ir, infrared);
+        if (valid)
+        {
+            Serial.print("CH0 Visible Light + IR: ");
+            Serial.println(visible_plus_ir);
+            Serial.print("CH1 Infrared: ");
+            Serial.println(infrared);
+        }
+    }
+    // LTR-303 Testing Code Done
+
+    // reconnectToWiFi(); // This work but out-commented during debugging
 
     // Serial.print("Light Intensity: ");               // Debugging message
     // Serial.println(analogRead(PhotoResistor_PIN));   // Debugging message
