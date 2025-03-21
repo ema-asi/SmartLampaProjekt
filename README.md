@@ -2,7 +2,7 @@
 
 ## Description
 
-This is an Arduino-based project that implements a smart lamp that can be controlled using a sound sensor (clap control) and a light sensor. The project also includes support for Wi-Fi connectivity.
+This is an Arduino-based project that implements a smart lamp that can be controlled using a sound sensor (clap control) and a light sensor. The project also includes support for Wi-Fi connectivity. The purpose of the project is to provide a user-friendly and energy-efficient lighting solution.
 
 ## Features
 
