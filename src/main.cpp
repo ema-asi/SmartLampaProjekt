@@ -41,16 +41,15 @@ void lampActivation();
 
 void setup()
 {
-    Serial.begin(115200);
-    lcd.begin(16, 2); // Sets up the display, defining number or rows(Y) and columns(X)
+    Serial.begin(115200);                           // Initialize the serial COM-port on the Arduino
+    lcd.begin(16, 2);                               // Sets up the display, defining number or rows(Y) and columns(X)
 
-    // I think this is what is required for the LTR sensor
-    ltr.begin(); // Inits it
-    ltr.setGain(LTR3XX_GAIN_96); // Sets gain i,e sensitivity
-    ltr.setIntegrationTime(LTR3XX_INTEGTIME_100); // Sets time we expect a whole signal to be in (i,e one signal is complete in 100 ms)
-    ltr.setMeasurementRate(LTR3XX_MEASRATE_200); // Works with above function, this defines how often we measure and for how long
-    ltr.enableInterrupt(false);
-    ltr.setInterruptPolarity(false);
+    ltr.begin();                                    // Inits it
+    ltr.setGain(LTR3XX_GAIN_96);                    // Sets gain i,e sensitivity
+    ltr.setIntegrationTime(LTR3XX_INTEGTIME_100);   // Sets time we expect a whole signal to be in (i,e one signal is complete in 100 ms)
+    ltr.setMeasurementRate(LTR3XX_MEASRATE_200);    // Works with above function, this defines how often we measure and for how long
+    ltr.enableInterrupt(false);                     // Disables(Or Enables) hardware interrupt pin (INT)
+    ltr.setInterruptPolarity(false);                // Sets polarity of INT
     ltr.setLowThreshold(2000);
     ltr.setHighThreshold(30000);
     ltr.setIntPersistance(4);
@@ -100,6 +99,9 @@ void loop()
     delay(100);
 }
 
+/**
+ * @brief Check if WiFi is connected, otherwise calls ConnectToWifi()
+ */
 void reconnectToWiFi()
 {
     if (WiFi.status() != WL_CONNECTED)
@@ -118,12 +120,24 @@ void reconnectToWiFi()
  */
 int lightSensorAverageReading()
 {
-    const int8_t sizeOfArray = 20;                             // Size of the array to store brightness values
-    static std::array<int, sizeOfArray> brightnessValues{};    // Array to store the last 5 brightness values
-    static int8_t index = 0;                                   // Index to keep track of the current position in the array
-    int sum{};                                                 // Variable to store the sum of brightness values
+    bool valid;
+    uint16_t visible_plus_ir, infrared, visible;
+    const int8_t sizeOfArray = 20;                              // Size of the array to store brightness values
+    static std::array<int, sizeOfArray> brightnessValues{};     // Array to store the last 5 brightness values
+    static int8_t index = 0;                                    // Index to keep track of the current position in the array
+    int sum{};                                                  // Variable to store the sum of brightness values
 
-    int sensor_input = analogRead(PhotoResistor_PIN); // Read the current value from the light sensor
+    // int sensor_input = analogRead(PhotoResistor_PIN);        // Read the current value from the light sensor
+
+    int sensor_input = ltr.readBothChannels(visible_plus_ir, infrared);
+    visible = (visible_plus_ir - infrared);
+
+    // Serial.print("Visible Plus IR: ");                       // Debugging message
+    // Serial.println(visible_plus_ir);                         // Debugging message
+    // Serial.print("Infrared Light: ");                        // Debugging message
+    // Serial.println(infrared);                                // Debugging message
+    // Serial.print("Visible Light: ");                         // Debugging message
+    // Serial.println(visible);                                 // Debugging message
 
     // Scale the sensor input to a range of 0-255
     int scaled_input = (sensor_input - Light_Dark_Value) * 255 / (Light_Bright_Value - Light_Dark_Value);
@@ -131,26 +145,26 @@ int lightSensorAverageReading()
     // Constrain the scaled input to be within the range 0-255
     scaled_input = (scaled_input > 255) ? 255 : (scaled_input < 0) ? 0 : scaled_input;
 
-    brightnessValues[index] = scaled_input; // Store the scaled input in the array
-    index = (index + 1) % sizeOfArray;      // Increment the index and wrap around if necessary
+    brightnessValues[index] = scaled_input;                     // Store the scaled input in the array
+    index = (index + 1) % sizeOfArray;                          // Increment the index and wrap around if necessary
 
-    for (const int &elements : brightnessValues) // Calculate the sum of the brightness values in the array
+    for (const int &elements : brightnessValues)                // Calculate the sum of the brightness values in the array
     {
         sum += elements;
     }
 
-    return (sum / sizeOfArray); // Calculate and then return the average brightness value
+    return (sum / sizeOfArray);                                 // Calculate and then return the average brightness value
 }
 
 void lampActivation()
 {
     if (isLampOn)
     {
-        analogWrite(LED_PIN, lightSensorAverageReading()); // Sets brightness based on 
+        analogWrite(LED_PIN, lightSensorAverageReading());      // Sets brightness based on 
     }
     else if (!isLampOn)
     {
-        analogWrite(LED_PIN, 0); // Set LED brightness to 0
+        analogWrite(LED_PIN, 0);                                // Set LED brightness to 0
     }
     else return;
 }
