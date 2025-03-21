@@ -68,7 +68,7 @@ This is an Arduino-based project that implements a smart lamp that can be contro
 ## Authors
 Jessica Sjösten - Maimehs
 Oscar Asserlund
-Emanuela Asidu
+Emanuela Asiedu
 Chengjun Yan
 Seref
 
