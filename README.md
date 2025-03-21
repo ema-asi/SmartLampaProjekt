@@ -2,7 +2,7 @@
 
 ## Description
 
-This is an Arduino-based project that implements a smart lamp that can be controlled using a sound sensor (clap control) and a light sensor. The project also includes support for Wi-Fi connectivity. The purpose of the project is to provide a user-friendly and energy-efficient lighting solution.
+This is an Arduino-based project that implements a smart lamp that can be controlled using a sound sensor (clap control) and a light sensor. The project also includes support for Wi-Fi connectivity. 
 
 ## Features
 
@@ -13,11 +13,12 @@ This is an Arduino-based project that implements a smart lamp that can be contro
 
 ## Hardware
 
-- Arduino-compatible microcontroller
-- Sound sensor (analog and digital output)
-- Photoresistor (light sensor)
+- Arduino-compatible microcontroller (Arduino Uno Rev4 Wifi)
+- KY-037 Condenser Microphone - Sound sensor (analog and digital output)
+- LM393 Light Detector - Photoresistor (light sensor)
 - LED (lamp controlled by the system)
 - Wi-Fi module (supports the WiFiS3 library)
+- LCD-display 
 
 ## Installation
 
@@ -26,6 +27,7 @@ This is an Arduino-based project that implements a smart lamp that can be contro
    - Sound sensor (digital) → D3
    - Light sensor → A0
    - LED → D4
+   - LCD-display → rs, en, d4, d5, d6, d7
 2. **Upload the code** to your Arduino device via the Arduino IDE.
 3. **Create an `arduino_secrets.h` file** in the project folder and fill in the Wi-Fi details:
    ```cpp
@@ -64,12 +66,15 @@ This is an Arduino-based project that implements a smart lamp that can be contro
 - Remote control via a web page or mobile app.
 - Integration with a cloud service for remote management.
 - Use of machine learning to improve sound recognition.
+- Rörelsedetektering: Utrusta lampan med sensorer som tänder eller släcker ljuset baserat på rörelse i rummet, vilket kan spara energi och öka bekvämligheten.
+- Implementera en funktion där lampans färgtemperatur och ljusstyrka automatiskt anpassas under dagen för att efterlikna naturligt ljus.
+
 
 ## Authors
 Jessica Sjösten - Maimehs
 Oscar Asserlund
 Emanuela Asiedu
-Chengjun Yan
+Chengjun Yan - Chengjun724
 Seref
 
 
