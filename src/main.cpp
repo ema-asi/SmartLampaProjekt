@@ -28,12 +28,12 @@ int brightness = 0;
 
 // Function Declarations:
 
+void reconnectToWiFi();
 int getFreeMemory();
 void printFreeMemory();
 int lightSensorAverageReading();
-void lightOnClaps();
-void setBrightness();
-void reconnectToWiFi();
+void detectClaps();
+void lampActivation();
 
 void setup()
 {
@@ -60,11 +60,10 @@ void loop()
     // Serial.println(analogRead(PhotoResistor_PIN));   // Debugging message
     // Serial.print("Sound Intensity: ");               // Debugging message
     // Serial.println(analogRead(SoundAnalog_PIN));     // Debugging message
+    // brightness = lightSensorAverageReading();        // Debugging message
 
-    brightness = lightSensorAverageReading();
-
-    lightOnClaps();
-    setBrightness();
+    detectClaps();
+    lampActivation();
 
     delay(100);
 }
@@ -87,10 +86,10 @@ void reconnectToWiFi()
  */
 int lightSensorAverageReading()
 {
-    const int sizeOfArray = 20;                             // Size of the array to store brightness values
-    static std::array<int, sizeOfArray> brightnessValues{}; // Array to store the last 5 brightness values
-    static int8_t index = 0;                                // Index to keep track of the current position in the array
-    int sum{};                                              // Variable to store the sum of brightness values
+    const int8_t sizeOfArray = 20;                             // Size of the array to store brightness values
+    static std::array<int, sizeOfArray> brightnessValues{};    // Array to store the last 5 brightness values
+    static int8_t index = 0;                                   // Index to keep track of the current position in the array
+    int sum{};                                                 // Variable to store the sum of brightness values
 
     int sensor_input = analogRead(PhotoResistor_PIN); // Read the current value from the light sensor
 
@@ -111,30 +110,28 @@ int lightSensorAverageReading()
     return (sum / sizeOfArray); // Calculate and then return the average brightness value
 }
 
-void setBrightness()
+void lampActivation()
 {
     if (isLampOn)
     {
-        analogWrite(LED_PIN, lightSensorAverageReading()); // Proposed solution
+        analogWrite(LED_PIN, lightSensorAverageReading()); // Sets brightness based on 
     }
-    else
+    else if (!isLampOn)
     {
         analogWrite(LED_PIN, 0); // Set LED brightness to 0
     }
+    else return;
 }
 
-void lightOnClaps()
+void detectClaps()
 {
     if (clapdetection.detect_claps(SoundAnalog_PIN))
     {
     // Serial.println("Clapdetection says: Beep Boop, you wake the computah!"); // Debugging message that can be turned on
     isLampOn = !isLampOn;
-    if (isLampOn)
-    {
-        setBrightness();
-    }
-    // setBrightness(); // Make sure the lamp is on/off without delay
-    // delay(5000);  // Commenting out this as we've agreed to not have functions call on delays
+    lampActivation();
+    // lampActivation(); // Make sure the lamp is on/off without delay
+    // delay(5000);     // Commenting out this as we've agreed to not have functions call on delays
     }
 }
 
