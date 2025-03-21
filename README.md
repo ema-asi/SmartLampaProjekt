@@ -23,9 +23,9 @@ This is an Arduino-based project that implements a smart lamp that can be contro
 
 1. **Connect the components** according to the wiring diagram:
    - Sound sensor (analog) → A1
-   - Sound sensor (digital) → D3
+   - Sound sensor (digital) → 7
    - Light sensor → A0
-   - LED → D4
+   - LED → 6
 2. **Upload the code** to your Arduino device via the Arduino IDE.
 3. **Create an `arduino_secrets.h` file** in the project folder and fill in the Wi-Fi details:
    ```cpp
