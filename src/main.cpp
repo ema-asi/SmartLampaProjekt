@@ -20,8 +20,8 @@
 #define Sound_Treshold 20
 #define ClapWindow 5000
 
-const bool WiFiOn = false;                                      // This turns on project wide usage of WiFi
-const bool DebugOn = false;                                     // This turns on project wide debugging prints
+constexpr bool WiFiOn = false;                                      // This turns on project wide usage of WiFi
+constexpr bool DebugOn = false;                                     // This turns on project wide debugging prints
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 extern "C" char *sbrk(int i);
 
@@ -34,6 +34,7 @@ int brightness = 0;
 
 // Function Declarations:
 
+void initializeLTR303();
 void reconnectToWiFi();
 int getFreeMemory();
 void printFreeMemory();
@@ -46,15 +47,7 @@ void setup()
     Serial.begin(115200);                           // Initialize the serial COM-port on the Arduino
     lcd.begin(16, 2);                               // Sets up the display, defining number or rows(Y) and columns(X)
 
-    ltr.begin();                                    // Inits it
-    ltr.setGain(LTR3XX_GAIN_96);                    // Sets gain i,e sensitivity
-    ltr.setIntegrationTime(LTR3XX_INTEGTIME_100);   // Sets time we expect a whole signal to be in (i,e one signal is complete in 100 ms)
-    ltr.setMeasurementRate(LTR3XX_MEASRATE_200);    // Works with above function, this defines how often we measure and for how long
-    ltr.enableInterrupt(false);                     // Disables(Or Enables) hardware interrupt pin (INT)
-    ltr.setInterruptPolarity(false);                // Sets polarity of INT
-    ltr.setLowThreshold(2000);
-    ltr.setHighThreshold(30000);
-    ltr.setIntPersistance(4);
+    initializeLTR303();
 
     pinMode(LED_PIN, OUTPUT);
     pinMode(PhotoResistor_PIN, INPUT);
@@ -190,6 +183,19 @@ void detectClaps()
     // lampActivation(); // Make sure the lamp is on/off without delay
     // delay(5000);     // Commenting out this as we've agreed to not have functions call on delays
     }
+}
+
+void initializeLTR303()
+{
+    ltr.begin();                                    // Inits it
+    ltr.setGain(LTR3XX_GAIN_96);                    // Sets gain i,e sensitivity
+    ltr.setIntegrationTime(LTR3XX_INTEGTIME_100);   // Sets time we expect a whole signal to be in (i,e one signal is complete in 100 ms)
+    ltr.setMeasurementRate(LTR3XX_MEASRATE_200);    // Works with above function, this defines how often we measure and for how long
+    ltr.enableInterrupt(false);                     // Disables(Or Enables) hardware interrupt pin (INT)
+    ltr.setInterruptPolarity(false);                // Sets polarity of INT
+    ltr.setLowThreshold(2000);
+    ltr.setHighThreshold(30000);
+    ltr.setIntPersistance(4);
 }
 
 // This code shows the remaining free memory between the heap and the stack
