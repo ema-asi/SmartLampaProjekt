@@ -20,6 +20,8 @@
 #define Sound_Treshold 20
 #define ClapWindow 5000
 
+const bool WiFiOn = false;                                      // This turns on project wide usage of WiFi
+const bool DebugOn = false;                                     // This turns on project wide debugging prints
 const int rs = 12, en = 11, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 extern "C" char *sbrk(int i);
 
@@ -60,10 +62,13 @@ void setup()
     pinMode(SoundDigital_PIN, INPUT);
 
     // WiFi Related Setup
-    lcd.println("Connecting to WiFi!");
-    // ConnectToWifi();
-    lcd.clear();
-    lcd.println("Established connection!");
+    if (WiFiOn)
+    {
+        lcd.println("Connecting to WiFi!");
+        ConnectToWifi();
+        lcd.clear();
+        lcd.println("Established connection!");
+    }
 }
 
 void loop()
@@ -85,7 +90,10 @@ void loop()
     }
     // LTR-303 Testing Code Done
 
-    // reconnectToWiFi(); // This work but out-commented during debugging
+    if (WiFiOn)
+    {
+        reconnectToWiFi();
+    }
 
     // Serial.print("Light Intensity: ");               // Debugging message
     // Serial.println(analogRead(PhotoResistor_PIN));   // Debugging message
@@ -122,22 +130,25 @@ int lightSensorAverageReading()
 {
     bool valid;
     uint16_t visible_plus_ir, infrared, visible;
-    const int8_t sizeOfArray = 20;                              // Size of the array to store brightness values
-    static std::array<int, sizeOfArray> brightnessValues{};     // Array to store the last 5 brightness values
-    static int8_t index = 0;                                    // Index to keep track of the current position in the array
-    int sum{};                                                  // Variable to store the sum of brightness values
+    const int8_t sizeOfArray = 20;                                          // Size of the array to store brightness values
+    static std::array<int, sizeOfArray> brightnessValues{};                 // Array to store the last 5 brightness values
+    static int8_t index = 0;                                                // Index to keep track of the current position in the array
+    int sum{};                                                              // Variable to store the sum of brightness values
 
-    // int sensor_input = analogRead(PhotoResistor_PIN);        // Read the current value from the light sensor
+    // int sensor_input = analogRead(PhotoResistor_PIN);                    // Read the current value from the light sensor (Old code we used with photoresistor)
 
-    int sensor_input = ltr.readBothChannels(visible_plus_ir, infrared);
-    visible = (visible_plus_ir - infrared);
+    int sensor_input = ltr.readBothChannels(visible_plus_ir, infrared);     // Read both channels from our new LTR303 sensor
+    visible = (visible_plus_ir - infrared);                                 // Calculates visible light by subtracting IR
 
-    // Serial.print("Visible Plus IR: ");                       // Debugging message
-    // Serial.println(visible_plus_ir);                         // Debugging message
-    // Serial.print("Infrared Light: ");                        // Debugging message
-    // Serial.println(infrared);                                // Debugging message
-    // Serial.print("Visible Light: ");                         // Debugging message
-    // Serial.println(visible);                                 // Debugging message
+    if (DebugOn)
+    {
+        Serial.print("Visible Plus IR: ");                                   // Debugging message
+        Serial.println(visible_plus_ir);                                     // Debugging message
+        Serial.print("Infrared Light: ");                                    // Debugging message
+        Serial.println(infrared);                                            // Debugging message
+        Serial.print("Visible Light: ");                                     // Debugging message
+        Serial.println(visible);                                             // Debugging message
+    }
 
     // Scale the sensor input to a range of 0-255
     int scaled_input = (sensor_input - Light_Dark_Value) * 255 / (Light_Bright_Value - Light_Dark_Value);
