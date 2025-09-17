@@ -3,6 +3,9 @@
 #include "clap_detection.h"
 #include <LiquidCrystal.h>
 #include <array>
+#define SLEEP_ENABLED      true          // Påslaget nu; stäng av genom att sätta till false
+#define SLEEP_AFTER_MS     (5UL * 60UL * 1000UL) // Gå i viloläge efter 5 min utan aktivitet
+#define LIGHT_CHANGE_TRIG  15            // Tröskel för ljusstyrkeförändring (över = räknas som aktivitet)
 
 #define PhotoResistor_PIN A0   // Analog input pin for light sensor
 #define SoundAnalog_PIN A1     // Analog input pin for sound sensor
@@ -26,10 +29,18 @@ int brightness = 0;
 bool wakeupflag = false;
 // Function Declarations:
 
+// Sleep mode
+bool   isSleeping       = false;         // Om den är i viloläge just nu
+uint32_t lastActivityMs = 0;             // Tidsstämpel för senast detekterad aktivitet
+int    prevBrightness   = 0;             // Ljusstyrka beräknad för föregående bildruta (frame)
+
 int light_AdjustBrightness();
 void lightOnClaps();
 void setBrightness();
 void reconnectToWiFi();
+void recordActivity();
+void enterSleep();
+void checkSleep();
 
 void setup()
 {
@@ -42,6 +53,7 @@ void setup()
   pinMode(SoundDigital_PIN, INPUT);
 
   ConnectToWifi();
+  lastActivityMs = millis();
 }
 
 void loop()
@@ -55,11 +67,20 @@ void loop()
 
   brightness = light_AdjustBrightness();
 
+  // Så länge ljusstyrkan ändras tydligt betraktas användarens omgivning som förändrad => aktivitet
+  if (abs(brightness - prevBrightness) >= LIGHT_CHANGE_TRIG) {
+    recordActivity();
+  }
+  prevBrightness = brightness;
+
   lightOnClaps();
   setBrightness();
 
   // Example usage of LCD-functionality:
   lcd.print("Hello World!");
+
+  //Kontrollera om det behövs att gå in i viloläge.
+  checkSleep();
 
   delay(100);
   // Sätter den på sleep mode för 1 sekund intervall
@@ -127,10 +148,19 @@ void lightOnClaps()
 {
   if (clapdetection.detect_claps(SoundAnalog_PIN))
   {
-    Serial.println("Clapdetection says: Beep Boop, you wake the computah!"); // Debugging message
+    recordActivity(); // kan här sätta isSleeping=false och tända lampan
+
+    if (isSleeping) {
+      // Viloläge: klapp används endast för att väcka, ingen växling
+      Serial.println("Clap: vakna från viloläge.");
+      return;
+    }
+
+    // Ej viloläge: tillåt växling via klapp
+    Serial.println("Clap: växla lampan.");
     isLampOn = !isLampOn;
-    setBrightness(); // Make sure the lamp is on/off without delay
-    delay(5000);
+    setBrightness();
+    delay(500); // undvik att blockera för länge
   }
 }
 
@@ -144,5 +174,50 @@ void setBrightness()
   else
   {
     analogWrite(LED_PIN, 0); // Set LED brightness, send PWM signal to LED
+  }
+}
+
+void recordActivity() {
+  lastActivityMs = millis();
+  if (isSleeping) {
+    // Väckning
+    isSleeping = false;
+    isLampOn = true;              // Tänd igen
+    lcd.display();                // LCD tänds
+    // Återgå till vanlig ljusstyrka 
+    brightness = prevBrightness > 0 ? prevBrightness : 120;
+    setBrightness();
+    Serial.println("[Sleep] Vaknar.");
+  }
+}
+
+// Gå in i viloläge (mjuk vila: släck lampan + LCD släcks)
+void enterSleep() {
+  if (isSleeping) return;
+  isSleeping = true;
+  prevBrightness = brightness;
+  isLampOn = false;               // Släck lampan
+  setBrightness();
+  lcd.noDisplay();                // LCD släcks (raderar inte innehållet)
+  Serial.println("[Sleep] Går in i viloläge.");
+}
+
+// Kontrollera regelbundet om det är dags för viloläge
+void checkSleep() {
+  if (!SLEEP_ENABLED) return;
+  
+  uint32_t currentMs = millis();
+  uint32_t timeSinceActivity;
+  
+  // Hantera overflow av millis() 
+  if (currentMs >= lastActivityMs) {
+    timeSinceActivity = currentMs - lastActivityMs;
+  } else {
+    // Fall då millis() har slagit runt (overflow)
+    timeSinceActivity = (0xFFFFFFFF - lastActivityMs) + currentMs + 1;
+  }
+  
+  if (!isSleeping && (timeSinceActivity >= SLEEP_AFTER_MS)) {
+    enterSleep();
   }
 }
